@@ -33,11 +33,12 @@ public class Alarm : MonoBehaviour
     {
         float changeStep = 0.1f;
         int maxVolume = 1;
+        WaitForSeconds delay = new WaitForSeconds(changeStep);
 
         for (int i = 0; i < maxVolume/changeStep; i++)
         {
             _audio.volume = Mathf.MoveTowards(_audio.volume, maxVolume, changeStep * _volumeModifier);
-            yield return new WaitForSeconds(changeStep);
+            yield return delay;
         }
     }
 
