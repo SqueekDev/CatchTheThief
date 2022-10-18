@@ -5,23 +5,30 @@ using UnityEngine;
 public class Transparency : MonoBehaviour
 {
     [SerializeField] private SpriteRenderer _renderer;
+    [SerializeField] private Home _home;
 
-    private void OnTriggerEnter2D(Collider2D collision)
+    private void OnEnable()
     {
-        if (collision.TryGetComponent<Thief>(out Thief thief))
-        {
-            float hidingPercent = 50;
-            ChangeVisibility(hidingPercent);
-        }
+        _home.Invaded += OnHomeInvaded;
+        _home.Left += OnHomeLeft;
     }
 
-    private void OnTriggerExit2D(Collider2D collision)
+    private void OnDisable()
     {
-        if (collision.TryGetComponent<Thief>(out Thief thief))
-        {
-            float visibilityPercent = 100;
-            ChangeVisibility(visibilityPercent);
-        }
+        _home.Invaded -= OnHomeInvaded;
+        _home.Left -= OnHomeLeft;
+    }
+
+    private void OnHomeInvaded()
+    {
+        float hidingPercent = 50;
+        ChangeVisibility(hidingPercent);
+    }
+
+    private void OnHomeLeft()
+    {
+        float visibilityPercent = 100;
+        ChangeVisibility(visibilityPercent);
     }
 
     private void ChangeVisibility(float percent)

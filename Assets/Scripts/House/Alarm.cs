@@ -6,33 +6,38 @@ public class Alarm : MonoBehaviour
 {
     [SerializeField] private AudioSource _audio;
     [SerializeField] private float _changeDegree;
-    
+    [SerializeField] private Home _home;
+
     private int _volumeModifier = -1;
 
-    private void Awake()
+    private void OnEnable()
     {
         _audio.volume = 0;
+        _home.Invaded += OnAlarmActivation;
+        _home.Left += OnAlarmActivation;
     }
 
-    private void Update()
+    private void OnDisable()
     {
-        float maxVolumeLevel = 1;
-        _audio.volume = Mathf.MoveTowards(_audio.volume, maxVolumeLevel, _changeDegree * _volumeModifier * Time.deltaTime);
+        _home.Invaded -= OnAlarmActivation;
+        _home.Left -= OnAlarmActivation;
     }
 
-    private void OnTriggerEnter2D(Collider2D collision)
+    private void OnAlarmActivation()
     {
-        if (collision.TryGetComponent<Thief> (out Thief thief))
+        ChangeVolumeModifier();
+        StartCoroutine(ChangeVolume());
+    }
+
+    private IEnumerator ChangeVolume()
+    {
+        float changeStep = 0.1f;
+        int maxVolume = 1;
+
+        for (int i = 0; i < maxVolume/changeStep; i++)
         {
-            ChangeVolumeModifier();
-        }
-    }
-
-    private void OnTriggerExit2D(Collider2D collision)
-    {
-        if (collision.TryGetComponent<Thief>(out Thief thief))
-        {
-            ChangeVolumeModifier();
+            _audio.volume = Mathf.MoveTowards(_audio.volume, maxVolume, changeStep * _volumeModifier);
+            yield return new WaitForSeconds(changeStep);
         }
     }
 
