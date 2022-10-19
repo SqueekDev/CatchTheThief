@@ -5,14 +5,13 @@ using UnityEngine.Events;
 
 public class Home : MonoBehaviour
 {
-    public event UnityAction Invaded;
-    public event UnityAction Left;
+    public event UnityAction<bool> Invaded;
 
     private void OnTriggerEnter2D(Collider2D collision)
     {
         if (collision.TryGetComponent<Thief>(out Thief thief))
         {
-            Invaded?.Invoke();
+            Invaded?.Invoke(true);
         }
     }
 
@@ -20,7 +19,7 @@ public class Home : MonoBehaviour
     {
         if (collision.TryGetComponent<Thief>(out Thief thief))
         {
-            Left?.Invoke();
+            Invaded?.Invoke(false);
         }
     }
 }

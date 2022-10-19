@@ -10,25 +10,26 @@ public class Transparency : MonoBehaviour
     private void OnEnable()
     {
         _home.Invaded += OnHomeInvaded;
-        _home.Left += OnHomeLeft;
     }
 
     private void OnDisable()
     {
         _home.Invaded -= OnHomeInvaded;
-        _home.Left -= OnHomeLeft;
     }
 
-    private void OnHomeInvaded()
+    private void OnHomeInvaded(bool invided)
     {
         float hidingPercent = 50;
-        ChangeVisibility(hidingPercent);
-    }
-
-    private void OnHomeLeft()
-    {
         float visibilityPercent = 100;
-        ChangeVisibility(visibilityPercent);
+
+        if (invided)
+        {
+            ChangeVisibility(hidingPercent);
+        }
+        else
+        {
+            ChangeVisibility(visibilityPercent);
+        }
     }
 
     private void ChangeVisibility(float percent)

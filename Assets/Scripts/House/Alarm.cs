@@ -8,42 +8,48 @@ public class Alarm : MonoBehaviour
     [SerializeField] private float _changeDegree;
     [SerializeField] private Home _home;
 
-    private int _volumeModifier = -1;
+    private Coroutine _volumeChange;
 
     private void OnEnable()
     {
         _audio.volume = 0;
-        _home.Invaded += OnAlarmActivation;
-        _home.Left += OnAlarmActivation;
+        _home.Invaded += OnHomeInvaded;
     }
 
     private void OnDisable()
     {
-        _home.Invaded -= OnAlarmActivation;
-        _home.Left -= OnAlarmActivation;
+        _home.Invaded -= OnHomeInvaded;
     }
 
-    private void OnAlarmActivation()
+    private void OnHomeInvaded(bool invaded)
     {
-        ChangeVolumeModifier();
-        StartCoroutine(ChangeVolume());
-    }
-
-    private IEnumerator ChangeVolume()
-    {
-        float changeStep = 0.1f;
-        int maxVolume = 1;
-        WaitForSeconds delay = new WaitForSeconds(changeStep);
-
-        for (int i = 0; i < maxVolume/changeStep; i++)
+        if (_volumeChange != null)
         {
-            _audio.volume = Mathf.MoveTowards(_audio.volume, maxVolume, changeStep * _volumeModifier);
-            yield return delay;
+            StopCoroutine(_volumeChange);
+        }
+
+        int minVolumeLevel = 0;
+        int maxVolumeLevel = 1;
+
+        if (invaded)
+        {
+            _volumeChange = StartCoroutine(ChangeVolumeLevel(maxVolumeLevel));
+        }
+        else
+        {
+            _volumeChange = StartCoroutine(ChangeVolumeLevel(minVolumeLevel));
         }
     }
 
-    private void ChangeVolumeModifier()
+    private IEnumerator ChangeVolumeLevel(float target)
     {
-        _volumeModifier *= -1;
+        float changeStep = 0.1f;
+        WaitForSeconds delay = new WaitForSeconds(changeStep);
+
+        while (_audio.volume != target)
+        {
+            _audio.volume = Mathf.MoveTowards(_audio.volume, target, changeStep);
+            yield return delay;
+        }
     }
 }
